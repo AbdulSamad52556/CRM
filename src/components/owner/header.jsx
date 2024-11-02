@@ -17,8 +17,19 @@ const Header = () => {
         setOwnerid(user)
 
     },[])
+
+    const logout = () =>{
+      localStorage.clear()
+      window.location.reload()
+    }
   return (
-    <div className='w-full bg-[#10002B] h-14'>
+    <div className='w-full bg-[#10002B] h-14 flex justify-end p-1'>
+      <div className='p-1 '>
+
+      <button className='px-4 py-2 bg-blue-500 rounded' onClick={logout}>
+        Logout
+      </button>
+      </div>
         
     </div>
   )

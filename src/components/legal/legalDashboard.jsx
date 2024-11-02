@@ -36,7 +36,10 @@ const LegalDashboard = () => {
         fetchDocuments();
     }, []);
 
-    
+    const logout = () =>{
+        localStorage.clear()
+        window.location.reload()
+    }    
     
 
     if (loading) {
@@ -58,7 +61,11 @@ const LegalDashboard = () => {
                         <TableCell>views</TableCell>
                         <TableCell>status</TableCell>
                         <TableCell>Verification</TableCell>
+                        <div className='py-4'>
+                            <button className='bg-[#10002B] p-2 text-white rounded' onClick={logout}>logout</button>
+                        </div>
                     </TableRow>
+
                 </TableHead>
                 <TableBody>
                     {documents.map((doc) => (
@@ -72,7 +79,7 @@ const LegalDashboard = () => {
                             </TableCell>
                             <TableCell>{doc.status}</TableCell>
                             <TableCell>
-                                {doc.is_verified_from_legal_team === false && doc.status === 'pending'?
+                                {doc.is_verified_from_legal_team === false && doc.status === 'Pending'?
                                 <button className='bg-[#10002B] p-2 text-white rounded'onClick={() => handleVerify(doc.id)} >
                                     send the agreement
                                 </button>: doc.status === 'pending' && doc.is_verified_from_legal_team === true ?

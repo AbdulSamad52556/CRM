@@ -61,7 +61,11 @@ const AuthProvider = ({ children }) => {
         console.log(user)
         setUser({ access, role:user.role });
         axios.defaults.headers.common['Authorization'] = `Bearer ${access}`;
-
+        console.log(user.role)
+        if (user.role == 'Legal Team'){
+            const redirectPath = roleRoutes['LegalTeam'] || '/';
+            return redirectPath
+        }
         const redirectPath = roleRoutes[user.role] || '/';
         return redirectPath
     };

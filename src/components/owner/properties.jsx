@@ -1,11 +1,15 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-const BASE_URL = 'http://localhost:8000'
+const BASE_URL = "http://localhost:8000";
 
 const Properties = () => {
   const [selectedOption, setSelectedOption] = useState("");
   const [modal, setModal] = useState(false);
+
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const [propertyname, setPropertyName] = useState("");
   const [propertytype, setPropertyType] = useState("");
@@ -20,7 +24,24 @@ const Properties = () => {
   const [imageFields, setImageFields] = useState([
     { id: Date.now(), file: null },
   ]);
-  const [paymentfile, setPaymentfile] = useState(null)
+  const [paymentfile, setPaymentfile] = useState(null);
+
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/api/assets/get-properties/`);
+        console.log(response.data)
+        setProperties(response.data);
+      } catch (error) {
+        console.log(error)
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperties();
+  }, []);
 
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
@@ -48,8 +69,8 @@ const Properties = () => {
     setPaymentfile(event.target.files[0]);
   };
 
-  const handleSubmit = async(e) =>{
-    e.preventDefault()
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
     const formData = new FormData();
 
@@ -65,33 +86,36 @@ const Properties = () => {
     formData.append("contract_type", contracttype);
 
     if (paymentfile) {
-        formData.append("payment_file", paymentfile);
-      }
+      formData.append("payment_file", paymentfile);
+    }
 
     imageFields.forEach((field, index) => {
-    if (field.file) {
+      if (field.file) {
         formData.append(`property_images`, field.file);
-    }
+      }
     });
-    console.log(formData)
-    const response = await axios.post(`${BASE_URL}/api/assets/properties/`,formData)
-    console.log(response.status)
-    if (response.status === 201){
-        setSelectedOption('')
-        setPropertyName('')
-        setPropertyType('')
-        setAvailableUnits('')
-        setAreaname('')
-        setLocation('')
-        setZoneNumber('')
-        setStreetNumber('')
-        setBuildingNumber('')
-        setContractType('')
-        setPaymentfile(null)
-        setImageFields({ id: Date.now(), file: null })
+    console.log(formData);
+    const response = await axios.post(
+      `${BASE_URL}/api/assets/properties/`,
+      formData
+    );
+    console.log(response.status);
+    if (response.status === 201) {
+      setSelectedOption("");
+      setPropertyName("");
+      setPropertyType("");
+      setAvailableUnits("");
+      setAreaname("");
+      setLocation("");
+      setZoneNumber("");
+      setStreetNumber("");
+      setBuildingNumber("");
+      setContractType("");
+      setPaymentfile(null);
+      setImageFields({ id: Date.now(), file: null });
     }
-    
-  }
+  };
+
 
   return (
     <div className="flex flex-col items-end">
@@ -104,7 +128,63 @@ const Properties = () => {
         </button>
       </div>
       <div className="w-full">
-        <div className="p-4 bg-black text-white ">sdfrsdfg</div>
+        
+
+      <div className=" mx-auto p-4">
+      <table className="min-w-full border border-gray-300 text-center">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="border px-4 py-2 text-sm opacity-50">Id</th>
+            <th className="border px-4 py-2 text-sm opacity-50">Property Name</th>
+            <th className="border px-4 py-2 text-sm opacity-50">Type</th>
+            <th className="border px-4 py-2 text-sm opacity-50">Mode</th>
+            <th className="border px-4 py-2 text-sm opacity-50">Area</th>
+            <th className="border px-4 py-2 text-sm opacity-50">Available Units</th>
+            <th className="border px-4 py-2 text-sm opacity-50">Contract Type</th>
+            <th className="border px-4 py-2 text-sm opacity-50">Google Maps Link</th>
+            {/* <th className="border px-4 py-2 text-sm opacity-50">Images</th> */}
+          </tr>
+        </thead>
+        <tbody>
+          {properties.map((property,index) => (
+            <tr key={index} className="hover:bg-gray-50">
+              <td className="border px-4 py-2">{index+1}</td>
+              <td className="border px-4 py-2">{property.property_name}</td>
+              <td className="border px-4 py-2">{property.property_type}</td>
+              <td className="border px-4 py-2">{property.mode}</td>
+              <td className="border px-4 py-2">{property.area_name}</td>
+              <td className="border px-4 py-2">{property.available_units}</td>
+              <td className="border px-4 py-2">{property.contract_type}</td>
+              <td className="border px-4 py-2">
+                <a href={property.google_maps_link} target="_blank" rel="noopener noreferrer">
+                  View Map
+                </a>
+              </td>
+              {/* <td className="border px-4 py-2">
+                {property.images.length > 0 ? (
+                  <div className="flex space-x-2">
+                    {property.images.map((image, index) => (
+                      <img
+                        key={index}
+                        src={image.image} // Ensure the image URL is accessible
+                        alt={`Property Image ${index + 1}`}
+                        className="h-12 w-12 object-cover rounded"
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <span>No Images</span>
+                )}
+              </td> */}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+
+
+
       </div>
 
       {modal && (
@@ -142,25 +222,27 @@ const Properties = () => {
                     placeholder="Property Name"
                     required
                     value={propertyname}
-                    onChange={(e)=>setPropertyName(e.target.value)}
+                    onChange={(e) => setPropertyName(e.target.value)}
                   />
                   <select
                     className="border shadow-lg h-10 text-sm p-2 focus:outline-none rounded"
                     required
                     onChange={(e) => setPropertyType(e.target.value)}
-                    value={propertytype} 
-                    >
-                    <option value="" disabled>Select Property Type</option> 
-                    <option value="residential">Residential</option>  
+                    value={propertytype}
+                  >
+                    <option value="" disabled>
+                      Select Property Type
+                    </option>
+                    <option value="residential">Residential</option>
                     <option value="commercial">Commercial</option>
-                    </select>
+                  </select>
                   <input
                     type="number"
                     className="border shadow-lg h-10 text-sm p-2 focus:outline-none rounded"
                     placeholder="Available Units"
                     required
                     value={availableunits}
-                    onChange={(e)=>setAvailableUnits(e.target.value)}
+                    onChange={(e) => setAvailableUnits(e.target.value)}
                   />
                 </div>
 
@@ -170,7 +252,7 @@ const Properties = () => {
                     className="border shadow-lg h-10 text-sm p-2 focus:outline-none rounded"
                     placeholder="Area Name"
                     value={areaname}
-                    onChange={(e)=>setAreaname(e.target.value)}
+                    onChange={(e) => setAreaname(e.target.value)}
                     required
                   />
                   <input
@@ -179,14 +261,16 @@ const Properties = () => {
                     placeholder="Google Map Location"
                     required
                     value={location}
-                    onChange={(e)=>{setLocation(e.target.value)}}
+                    onChange={(e) => {
+                      setLocation(e.target.value);
+                    }}
                   />
                   <input
                     type="text"
                     className="border shadow-lg h-10 text-sm p-2 focus:outline-none rounded"
                     placeholder="Zone Number"
                     value={zonenumber}
-                    onChange={(e)=>setZoneNumber(e.target.value)}
+                    onChange={(e) => setZoneNumber(e.target.value)}
                     required
                   />
                 </div>
@@ -196,7 +280,7 @@ const Properties = () => {
                     className="border shadow-lg h-10 text-sm p-2 focus:outline-none rounded"
                     placeholder="Street Number"
                     value={streetnumber}
-                    onChange={(e)=>setStreetNumber(e.target.value)}
+                    onChange={(e) => setStreetNumber(e.target.value)}
                     required
                   />
                   <input
@@ -205,18 +289,20 @@ const Properties = () => {
                     placeholder="Building Number"
                     value={buildingnumber}
                     required
-                    onChange={(e)=>setBuildingNumber(e.target.value)}
+                    onChange={(e) => setBuildingNumber(e.target.value)}
                   />
                   <select
                     className="border shadow-lg h-10 text-sm p-2 focus:outline-none rounded"
-                    value={contracttype} 
-                    onChange={(e) => setContractType(e.target.value)} 
+                    value={contracttype}
+                    onChange={(e) => setContractType(e.target.value)}
                     required
-                    >
-                    <option value="" disabled>Select Contract Type</option>
-                    <option value="Exclusive">Exclusive</option> 
+                  >
+                    <option value="" disabled>
+                      Select Contract Type
+                    </option>
+                    <option value="Exclusive">Exclusive</option>
                     <option value="Non-Exclusive">Non-Exclusive</option>
-                    </select>
+                  </select>
                 </div>
 
                 <div className="">
@@ -245,8 +331,10 @@ const Properties = () => {
                       </button>
                     </div>
                     <div className="">
-
-                      <button className="bg-[#10002B] px-9 py-2 text-white rounded" onClick={handleSubmit}>
+                      <button
+                        className="bg-[#10002B] px-9 py-2 text-white rounded"
+                        onClick={handleSubmit}
+                      >
                         Submit
                       </button>
                     </div>
@@ -289,7 +377,6 @@ const Properties = () => {
                 </div>
               </form>
             </div>
-          
           </div>
         </div>
       )}

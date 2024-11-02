@@ -31,7 +31,7 @@ const App = () => {
         <Route path="/owner" element={ <PrivateRoute element={<Ownermanagement/>} allowedRoles={['Admin']} />} />
         <Route path="/legal" element={ <PrivateRoute element={<Legal/>} allowedRoles={['Admin']} />} />
         <Route path="/admin-settings" element={ <PrivateRoute element={<Settings/>} allowedRoles={['Admin']} />} />
-        <Route path="/legal-team-dashboard" element={ <PrivateRoute element={<LegalDashboard/>} allowedRoles={['LegalTeam']} />} />
+        <Route path="/legal-team-dashboard" element={ <PrivateRoute element={<LegalDashboard/>} allowedRoles={['Legal Team']} />} />
         <Route path="/owner-dashboard" element={ <PrivateRoute element={<Ownersdashboard/>} allowedRoles={['Owner']} />} />
 
         <Route path="/lead-generation-dashboard" element={ <PrivateRoute element={<div>Lead Generation Dashboard</div>} allowedRoles={['lead_generation_specialist']} />} />
