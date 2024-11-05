@@ -1,11 +1,16 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const BASE_URL = "http://localhost:8000";
 
 const Properties = () => {
+  const { user, logout } = useContext(AuthContext)
   const [selectedOption, setSelectedOption] = useState("");
   const [modal, setModal] = useState(false);
+
+  const navigate = useNavigate();
 
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,9 +32,14 @@ const Properties = () => {
   const [paymentfile, setPaymentfile] = useState(null);
 
   useEffect(() => {
+    console.log('user: ',user.id)
     const fetchProperties = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/assets/get-properties/`);
+        const response = await axios.get(`${BASE_URL}/api/assets/get-properties/`,{
+          params: {
+              userId: user.id,
+            }
+      });
         console.log(response.data)
         setProperties(response.data);
       } catch (error) {
@@ -142,6 +152,7 @@ const Properties = () => {
             <th className="border px-4 py-2 text-sm opacity-50">Available Units</th>
             <th className="border px-4 py-2 text-sm opacity-50">Contract Type</th>
             <th className="border px-4 py-2 text-sm opacity-50">Google Maps Link</th>
+            <th className="border px-4 py-2 text-sm opacity-50">Units</th>
             {/* <th className="border px-4 py-2 text-sm opacity-50">Images</th> */}
           </tr>
         </thead>
@@ -160,22 +171,12 @@ const Properties = () => {
                   View Map
                 </a>
               </td>
-              {/* <td className="border px-4 py-2">
-                {property.images.length > 0 ? (
-                  <div className="flex space-x-2">
-                    {property.images.map((image, index) => (
-                      <img
-                        key={index}
-                        src={image.image} // Ensure the image URL is accessible
-                        alt={`Property Image ${index + 1}`}
-                        className="h-12 w-12 object-cover rounded"
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <span>No Images</span>
-                )}
-              </td> */}
+              <td className="border px-4 py-2">
+                <button className="text-sm p-2 bg-black rounded text-white" onClick={()=>navigate(`/units?propertyId=${property.id}`)}>
+                  units
+                </button>
+              </td>
+
             </tr>
           ))}
         </tbody>

@@ -1,27 +1,20 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../context/AuthContext'
 import axios from 'axios'
 
 const BASE_URL = 'http://localhost:8000'
 
 const Header = () => {
-
+    const { user, logout } = useContext(AuthContext)
     const [ownerid, setOwnerid] = useState(0)
 
     useEffect(()=>{
-        const user = localStorage.getItem('ownerid')
         const fetchOwner = async() =>{
             const response = await axios.post(`${BASE_URL}`)
         }
-        console.log(user)
-        setOwnerid(user)
+        setOwnerid(user.id)
 
     },[])
-
-    const logout = () =>{
-      localStorage.clear()
-      window.location.reload()
-    }
   return (
     <div className='w-full bg-[#10002B] h-14 flex justify-end p-1'>
       <div className='p-1 '>

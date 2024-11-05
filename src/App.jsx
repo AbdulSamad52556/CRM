@@ -1,7 +1,7 @@
 // src/App.jsx
 import React, { useContext } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import PrivateRoute from "./components/PrivateRoute";
+import PrivateRoute from "./components/privateroute";
 import { AuthContext } from "./context/AuthContext";
 import Login from "./components/login";
 import Signup from "./components/signup";
@@ -13,6 +13,9 @@ import Legal from "./components/admin/legal";
 import Settings from "./components/admin/settings";
 import LegalDashboard from "./components/legal/legalDashboard";
 import Ownersdashboard from "./components/owner/ownersdashboard";
+import Home from "./components/home";
+import Units from "./components/owner/units";
+import Dashboard2 from "./components/agent/dashboard";
 
 const App = () => {
   const { user } = useContext(AuthContext);
@@ -21,7 +24,7 @@ const App = () => {
     <div>
      
       <Routes>
-        <Route path="/" element={<div>Home page</div>} />
+        <Route path="/" element={<div><Home/></div>} />
         <Route path="/login" element={<Login/>} />
         <Route path="/signup" element={<Signup/>} />
 
@@ -33,6 +36,8 @@ const App = () => {
         <Route path="/admin-settings" element={ <PrivateRoute element={<Settings/>} allowedRoles={['Admin']} />} />
         <Route path="/legal-team-dashboard" element={ <PrivateRoute element={<LegalDashboard/>} allowedRoles={['Legal Team']} />} />
         <Route path="/owner-dashboard" element={ <PrivateRoute element={<Ownersdashboard/>} allowedRoles={['Owner']} />} />
+        <Route path="/units" element={ <PrivateRoute element={<Units/>} allowedRoles={['Owner']} />} />
+        <Route path="/agent-dashboard" element={ <PrivateRoute element={<Dashboard2/>} allowedRoles={['Agent']} />} />
 
         <Route path="/lead-generation-dashboard" element={ <PrivateRoute element={<div>Lead Generation Dashboard</div>} allowedRoles={['lead_generation_specialist']} />} />
         <Route path="/property-manager-dashboard" element={ <PrivateRoute element={<div>Property Manager Dashboard</div>} allowedRoles={['property_manager']} />} />

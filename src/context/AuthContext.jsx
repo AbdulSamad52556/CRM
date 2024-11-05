@@ -8,6 +8,7 @@ const roleRoutes = {
     user: '/user-dashboard', 
     LegalTeam: '/legal-team-dashboard',
     Owner:'/owner-dashboard',
+    Agent:'/agent-dashboard',
     lead_generation_specialist: '/lead-generation-dashboard',
     property_manager: '/property-manager-dashboard',
     facility_manager: '/facility-manager-dashboard',
@@ -27,20 +28,18 @@ const AuthProvider = ({ children }) => {
     useEffect(() => {
         const token = localStorage.getItem('token');
         const role = localStorage.getItem('role');
-        if (token) {
+        const userid = localStorage.getItem('userid');
+        if (token && role && userid) {
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            setUser({ token, role });
+            setUser({ token, role, id: userid });
         }
         setLoading(false);
     }, []);
 
-    const signup = async (username, password) => {
-        const response = await axios.post(`${BASE_URL}/api/signup`, { username, password });
-        const { token } = response.data.user;
-        localStorage.setItem('token', token);
-        setUser({ token });
-        console.log(user)
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    const signup = async (first_name, last_name, email, phone_number, role, password) => {
+        const username = email
+        const response = await axios.post(`${BASE_URL}/api/users/register/`, { first_name, last_name, username, email, phone_number, role, password });
+        return response.data
     };
 
     const login = async (email, password) => {
@@ -57,9 +56,9 @@ const AuthProvider = ({ children }) => {
         const { access, user } = response.data;
         localStorage.setItem('token', access);
         localStorage.setItem('role', user.role);
-        localStorage.setItem('ownerid', user.id);
-        console.log(user)
-        setUser({ access, role:user.role });
+        localStorage.setItem('userid', user.id);
+
+        setUser({ token: access, role: user.role, id: user.id });
         axios.defaults.headers.common['Authorization'] = `Bearer ${access}`;
         console.log(user.role)
         if (user.role == 'Legal Team'){
@@ -87,8 +86,11 @@ const AuthProvider = ({ children }) => {
 
     const logout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('role');
+        localStorage.removeItem('userid');
         setUser(null);
         delete axios.defaults.headers.common['Authorization'];
+        navigate('/login');
     };
 
     return (

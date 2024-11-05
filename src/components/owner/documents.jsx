@@ -1,21 +1,24 @@
 import axios from 'axios'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { AuthContext } from '../../context/AuthContext';
 
 const BASE_URL = 'http://localhost:8000'
 
 const Documents = () => {
     const [ownerid, setOwnerid] = useState(0)
     const [documents, setDocuments] = useState([]);
+    const [error, setError] = useState(null);
+    const { user, logout } = useContext(AuthContext)
 
     useEffect(()=>{
-        const user = localStorage.getItem('ownerid')
         const fetchDocuments = async () => {
             try {
-                const response = await axios.get(`${BASE_URL}/api/crm/agreement-documents/owner/${user}/`);
+                const response = await axios.get(`${BASE_URL}/api/crm/agreement-documents/owner/${user.id}/`);
                 setDocuments(response.data);
                 console.log(response.data)
             } catch (err) {
+                console.log(err)
                 setError(err);
             }
         };
